@@ -1,0 +1,8 @@
+.DS_Store
+resources/
+
+# Datasets and generated caches (Penn Action is 3.5 GB; see README)
+Penn_Action/
+cache/
+runs/
+__pycache__/
