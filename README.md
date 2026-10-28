@@ -32,7 +32,7 @@ python evaluate.py runs/lstm_seed0/preds_test.csv --plot runs/lstm_test.png
 Input: `[N, 64, 13, 2]`; output: logits `[N, 15]`.
 
 The branch includes the shared `penn_action.py`, `train.py`, `evaluate.py`,
-`models/graph.py`, and fixed validation split. No other branch is required.
+and the fixed validation split.
 
 ## Outputs
 

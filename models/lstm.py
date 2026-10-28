@@ -1,6 +1,6 @@
 from torch import nn
 
-from .graph import NUM_JOINTS
+NUM_JOINTS = 13
 
 
 class LSTM(nn.Module):

@@ -13,7 +13,7 @@ import torch
 import torch.nn.functional as F
 
 from models import build_model
-from models.graph import NUM_JOINTS
+from models.lstm import NUM_JOINTS
 
 
 class LSTMTests(unittest.TestCase):
