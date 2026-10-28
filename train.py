@@ -3,7 +3,7 @@
 Writes runs/<model>_seed<seed>/: config.json, log.csv, best.pt and preds_val.csv
 (plus preds_test.csv with --test, which should wait for the final runs).
 
-Example: python train.py --model lstm --seed 0
+Example: python train.py --model spatial_gcn --seed 0
 """
 import argparse
 import csv
@@ -23,9 +23,9 @@ from penn_action import CLASSES, PennAction
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--model", default=next(iter(MODELS)), choices=MODELS)
+    p.add_argument("--model", default="spatial_gcn", choices=MODELS)
     p.add_argument("--model-args", type=json.loads, default={},
-                   help='extra model arguments as JSON, e.g. \'{"dropout": 0.25}\'')
+                   help='extra model arguments as JSON, e.g. \'{"strategy": "uniform"}\'')
     p.add_argument("--epochs", type=int, default=60)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--lr", type=float, default=1e-3)
