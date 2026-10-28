@@ -1,0 +1,19 @@
+{
+  "dataset_root": "C:\\Users\\twang\\OneDrive\\\u684c\u9762\\CS566\\Project\\Penn_Action",
+  "output": "C:\\Users\\twang\\OneDrive\\\u6587\u6863\\ChatGPT\\CS566 Project\\processed\\penn_action_64.npz",
+  "manifest": "C:\\Users\\twang\\OneDrive\\\u6587\u6863\\ChatGPT\\CS566 Project\\processed\\manifest.csv",
+  "sequences": 2326,
+  "train_sequences": 1258,
+  "test_sequences": 1068,
+  "classes": 15,
+  "target_frames": 64,
+  "feature_shape": [
+    2326,
+    3,
+    64,
+    13
+  ],
+  "verified_frame_files": true,
+  "repaired_bbox_frames": 185,
+  "padded_bbox_frames": 2
+}

@@ -1,0 +1,3 @@
+[console_scripts]
+penn-preprocess = cs566_action.preprocess:main
+penn-train-mlp = cs566_action.train_mlp:main
