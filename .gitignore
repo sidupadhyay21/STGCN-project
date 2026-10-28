@@ -6,3 +6,10 @@ Penn_Action/
 cache/
 runs/
 __pycache__/
+.venv/
+venv/
+*.py[cod]
+.pytest_cache/
+Penn_Action.tar.gz
+results/
+runs_*/
