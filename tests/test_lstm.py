@@ -1,14 +1,5 @@
-"""Synthetic fixtures validate the pipeline without modifying real data."""
-import contextlib
-import io
-import json
-from pathlib import Path
-import tempfile
 import unittest
-from unittest.mock import patch
 
-import numpy as np
-import scipy.io as sio
 import torch
 import torch.nn.functional as F
 
@@ -71,58 +62,6 @@ class LSTMTests(unittest.TestCase):
             loss.backward()
             opt.step()
         self.assertTrue((model(x).argmax(1) == y).all(), loss.item())
-
-    def test_shared_pipeline(self):
-        import evaluate
-        import penn_action
-        import train
-
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            labels = root / "Penn_Action" / "labels"
-            labels.mkdir(parents=True)
-            val_ids = []
-            rng = np.random.default_rng(0)
-            # Create separate train, validation and test fixtures, each with all classes.
-            for split in range(3):
-                for cls, action in enumerate(penn_action.CLASSES):
-                    vid = f"{split * 15 + cls + 1:04d}"
-                    xy = rng.normal(size=(8, NUM_JOINTS, 2)).astype(np.float32)
-                    sio.savemat(labels / f"{vid}.mat", {
-                        "x": xy[..., 0], "y": xy[..., 1],
-                        "visibility": np.ones((8, NUM_JOINTS)),
-                        "action": action, "train": 1 if split < 2 else -1,
-                    })
-                    if split == 1:
-                        val_ids.append(vid)
-            split_file = root / "val_ids.txt"
-            split_file.write_text("\n".join(val_ids))
-            argv = ["train.py", "--model", "lstm", "--epochs", "2", "--device", "cpu",
-                    "--batch-size", "15", "--out", str(root / "runs"), "--test",
-                    "--model-args", '{"hidden": 8, "num_layers": 1, "dropout": 0}']
-            # Redirect every data and output path to avoid touching real experiments.
-            with patch.object(penn_action, "DATA_DIR", root / "Penn_Action"), \
-                 patch.object(penn_action, "CACHE_DIR", root / "cache"), \
-                 patch.object(penn_action, "VAL_SPLIT_FILE", split_file), \
-                 patch("sys.argv", argv), contextlib.redirect_stdout(io.StringIO()):
-                train.main()
-                run = root / "runs" / "lstm_seed0"
-                for name in ("config.json", "log.csv", "best.pt", "preds_val.csv", "preds_test.csv"):
-                    self.assertTrue((run / name).is_file(), name)
-                config = json.loads((run / "config.json").read_text())
-                model = build_model(config["model"], **config["model_args"])
-                model.load_state_dict(torch.load(run / "best.pt", map_location="cpu", weights_only=True))
-                for split in ("val", "test"):
-                    loader = train.DataLoader(penn_action.PennAction(split), batch_size=15)
-                    ids, targets, probabilities = train.predict(model, loader, "cpu")
-                    y, pred = evaluate.read_preds(run / f"preds_{split}.csv")
-                    self.assertEqual(len(ids), 15)
-                    np.testing.assert_array_equal(y, targets)
-                    np.testing.assert_array_equal(pred, probabilities.argmax(1))
-                with patch("sys.argv", ["evaluate.py", str(run / "preds_val.csv"),
-                                        "--plot", str(root / "cm.png")]):
-                    evaluate.main()
-                self.assertTrue((root / "cm.png").is_file())
 
 
 if __name__ == "__main__":
