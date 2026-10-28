@@ -1,7 +1,8 @@
+from .spatial_gcn import SpatialGCN
 from .lstm import LSTM
 
-# Interface: x [N, T, V, C], optional vis [N, T, V] -> logits [N, num_classes].
 MODELS = {
+    "spatial_gcn": SpatialGCN,
     "lstm": LSTM,
 }
 
