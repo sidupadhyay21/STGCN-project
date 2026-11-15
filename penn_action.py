@@ -26,6 +26,8 @@ VAL_SPLIT_FILE = ROOT / "splits" / "val_ids.txt"
 NUM_FRAMES = 64      # every clip is resampled to this many evenly spaced frames
 VAL_FRACTION = 0.15  # share of the official training clips held out for validation
 SPLIT_SEED = 0
+# Clips left out of every split. 1403 is labelled "pushup" but shows a barbell lift.
+EXCLUDED = ["1403"]
 
 
 def load_clip(path):
@@ -92,6 +94,7 @@ class PennAction(Dataset):
             make_val_split(d["video_id"][d["is_train"]], d["label"][d["is_train"]])
         in_val = np.isin(d["video_id"], VAL_SPLIT_FILE.read_text().split())
         mask = {"train": d["is_train"] & ~in_val, "val": in_val, "test": ~d["is_train"]}[split]
+        mask &= ~np.isin(d["video_id"], EXCLUDED)
 
         x, vis = d["x"][mask], d["vis"][mask]
         if invisible == "zero":
